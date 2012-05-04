@@ -1,6 +1,12 @@
 
-// namespace to global/window
-var jsm = this.jsm = {};
+var jsm = {};
+
+if (typeof exports !== 'undefined') {
+  if (typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = jsm;
+  }
+  exports.jsm = jsm;
+}
 
 jsm.util = {
   
