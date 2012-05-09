@@ -1,12 +1,6 @@
 
-var jsm = {};
-
-if (typeof exports !== 'undefined') {
-  if (typeof module !== 'undefined' && module.exports) {
-    exports = module.exports = jsm;
-  }
-  exports.jsm = jsm;
-}
+// project namespace
+var jsm = this.jsm = {};
 
 jsm.util = {
   
@@ -44,6 +38,7 @@ jsm.util = {
   }
 };
 
+// Simple inheritance helper
 jsm.Constructor = function() {};
 jsm.Constructor.include = function(obj) { jsm.util.extend(this.prototype, obj); };
 jsm.Constructor.mixin = jsm.Constructor.prototype.mixin = function(obj) { jsm.util.extend(this, obj); };
@@ -67,6 +62,9 @@ jsm.Constructor.extend = function(Constructor, prototype, statics) {
   return NewConstructor;
 }
 
+// Collection for models
+// coerces to given Model or jsm.Model
+// utilizes underscore methods, a la backbone.js
 jsm.Collection = jsm.Constructor.extend(function(Model) {
   this.array = [];
   this._array = _(this.array);
@@ -107,6 +105,8 @@ jsm.Model = jsm.Constructor.extend(function() {
   this._jsm_id = jsm.util.uid();
   this.keys = [];
   this.data = {};
+  this.errors = {};
+  this._errors = _(this.errors);
 }, {
 
   key: function(name) {
@@ -114,11 +114,29 @@ jsm.Model = jsm.Constructor.extend(function() {
   },
 
   set: function(key, val) {
-    this.data[key] = val;
+    this.changes[key] = val;
   },
 
   get: function(key) {
     return this.data[key];
+  },
+
+  save: function() {
+    if (this.valid()) {
+      jsm.util.extend(this.data, this.changes);
+      this.trigger('saved', this);
+      return true;
+    }
+    else {
+      this.trigger('errored', this);
+      return false;
+    }
+  },
+
+  valid: function() {
+    this.errors = {};
+    this.validate();
+    return this._errors.isEmpty();
   }
 
 }, {

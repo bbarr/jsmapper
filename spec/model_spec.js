@@ -10,12 +10,22 @@ describe(jsm.Model, function() {
     });
   });
 
-  describe('setting, getting and saving', function() {
+  describe('setting and getting', function() {
 
+    it ('should set an attribute to the changes object', function() {
+      var person = new (jsm.Model.extend('person'));
+      person.set('a', 1);
+      expect(person.data.a).toBe(1);
+    });
+
+    it ('should get an attribute from the data object', function() {
+      var person = new (jsm.Model.extend('person'));
+      person.data.a = 1;
+      expect(person.get('a')).toBe(1);
+    });
   });
 
   describe('relationships', function() {
-
   });
 
 });
