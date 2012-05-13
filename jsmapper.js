@@ -41,8 +41,8 @@ jsm.util = {
 // Simple inheritance helper
 jsm.Constructor = function() {};
 jsm.Constructor.include = function(obj) { jsm.util.extend(this.prototype, obj); };
-jsm.Constructor.mixin = jsm.Constructor.prototype.mixin = function(obj) { jsm.util.extend(this, obj); };
-jsm.Constructor.extend = function(Constructor, prototype, statics) {
+jsm.Constructor.mixin = function(obj) { jsm.util.extend(this, obj); };
+jsm.Constructor.extend = function(Constructor, prototype, constructor_properties) {
  
   var self = this;
 
@@ -52,7 +52,7 @@ jsm.Constructor.extend = function(Constructor, prototype, statics) {
   };
   
   jsm.util.extend(NewConstructor, this);
-  if (statics) jsm.util.extend(NewConstructor, statics);
+  if (constructor_properties) jsm.util.extend(NewConstructor, constructor_properties);
   NewConstructor.Parent = this;
 
   NewConstructor.prototype = jsm.util.extend({}, this.prototype);
@@ -65,11 +65,13 @@ jsm.Constructor.extend = function(Constructor, prototype, statics) {
 // Collection for models
 // coerces to given Model or jsm.Model
 // utilizes underscore methods, a la backbone.js
-jsm.Collection = jsm.Constructor.extend(function(Model) {
+jsm.Collection = function(Model) {
   this.array = [];
   this._array = _(this.array);
   this.Model = Model || jsm.Model;
-}, {
+};
+
+jsm.Collection.prototype = {
 
   add: function(obj) {
     if (obj._jsm_id) {
@@ -99,7 +101,7 @@ jsm.Collection = jsm.Constructor.extend(function(Model) {
       return true;
     });
   }
-});
+};
 
 jsm.Model = jsm.Constructor.extend(function() {
   this._jsm_id = jsm.util.uid();
@@ -114,7 +116,7 @@ jsm.Model = jsm.Constructor.extend(function() {
   },
 
   set: function(key, val) {
-    this.changes[key] = val;
+    this.data[key] = val;
   },
 
   get: function(key) {

@@ -2,6 +2,25 @@ require('./spec_helper.js');
 
 describe(jsm.Model, function() {
 
+  describe('creation', function() {
+    
+    it ('should be creatable with only a name', function() {
+      var Person = jsm.Model.extend('person'),
+          person = new Person;
+      expect(person._jsm_id).toBeDefined();
+    });
+
+    it ('should inherit from another class', function() {
+      var Person = jsm.Model.extend('person');
+      //Person.include({ family: 'mammal', quadroped: false });
+      var Baby = Person.extend('child');
+      //Baby.include({ quadroped: true });
+      var baby = new Baby;
+      //expect(baby.quadroped).toBeTrue();
+      //expect(baby.family).toBe('mammal');
+    });
+  });
+
   describe('keys', function() {
 
     it ('should add a key to the keys array', function() {
