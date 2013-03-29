@@ -5,35 +5,26 @@
 
     utils = require('utils');
     return describe('utils', function() {
-      return describe('.asParent', function() {
-        var Child, Parent;
+      return describe('.asMixin', function() {
+        var Mixer, a, mixerProps;
 
-        Child = null;
-        Parent = function() {
+        a = null;
+        Mixer = function() {
           return this.prop = 1;
         };
-        Parent.foo = 'bar';
-        Parent.prototype.method = function() {};
+        mixerProps = {
+          method: (function() {})
+        };
         beforeEach(function() {
-          return Child = function() {};
+          return a = function() {};
         });
-        return describe('the returned parent', function() {
-          it('should decorate instance', function() {
-            var a;
-
-            a = new (utils.asParent(Parent)(Child));
-            return expect(a.prop).toBeDefined();
-          });
-          it('should decorate prototype', function() {
-            var a;
-
-            a = new (utils.asParent(Parent)(Child));
-            return expect(a.method).toBeDefined();
-          });
-          return it('should decorate constructor', function() {
-            Child = utils.asParent(Parent)(Child);
-            return expect(Child.foo).toBe('bar');
-          });
+        it('should create a mixin calling given constructor', function() {
+          utils.asMixer(Mixer, mixerProps)(a);
+          return expect(a.prop).toBeDefined();
+        });
+        return it('should create a mixin that tries to decorate from prototype', function() {
+          utils.asMixer(Mixer, mixerProps)(a);
+          return expect(a.method).toBeDefined();
         });
       });
     });

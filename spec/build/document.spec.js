@@ -10,12 +10,20 @@
       Animal = null;
       a = null;
       beforeEach(function() {
-        Animal = asDocument(function() {
-          this.key('name');
-          return this.validate('name', (function(name) {
-            return name.length > 2 && name.length < 10;
-          }), 'must be between 2 and 10 characters');
-        });
+        Animal = (function() {
+          function Animal() {
+            this.key('name');
+            this.validate('name', (function(name) {
+              return name.length > 2 && name.length < 10;
+            }), 'must be between 2 and 10 characters');
+          }
+
+          Animal.prototype.foo = 'bar';
+
+          return Animal;
+
+        })();
+        Animal = asDocument(Animal);
         return a = new Animal;
       });
       describe('#meta', function() {
@@ -54,10 +62,28 @@
           return expect(a._meta.errors.name[0]).toBe('must be between 2 and 10 characters');
         });
       });
-      return describe('#each', function() {
+      describe('#each', function() {
         return it('should iterate over properties that are defined as keys', function() {
           return a.each(function(v, k) {
             return expect(a._meta.keys[k]).toBeDefined();
+          });
+        });
+      });
+      return describe('#watch', function() {
+        return it('should keep an eye on things...', function() {
+          var changed;
+
+          changed = false;
+          a.name = 'foo';
+          a.watch('name', (function() {
+            return changed = true;
+          }));
+          a.name = 'bar';
+          waitsFor(function() {
+            return changed;
+          });
+          return runs(function() {
+            return expect(changed).toBe(true);
           });
         });
       });

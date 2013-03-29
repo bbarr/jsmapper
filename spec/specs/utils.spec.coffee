@@ -4,25 +4,18 @@ define (require) ->
 
   describe 'utils', ->
 
-    describe '.asParent', ->
+    describe '.asMixin', ->
 
-      Child = null
-      Parent = -> @prop = 1
-      Parent.foo = 'bar'
-      Parent.prototype.method = ->
+      a = null
+      Mixer = -> @prop = 1
+      mixerProps = method: (->)
       beforeEach ->
-        Child = ->
+        a = ->
 
-      describe 'the returned parent', ->
+      it 'should create a mixin calling given constructor', ->
+        utils.asMixer(Mixer, mixerProps)(a)
+        expect(a.prop).toBeDefined()
 
-        it 'should decorate instance', ->
-          a = new (utils.asParent(Parent)(Child))
-          expect(a.prop).toBeDefined()
-
-        it 'should decorate prototype', ->
-          a = new (utils.asParent(Parent)(Child))
-          expect(a.method).toBeDefined()
-
-        it 'should decorate constructor', ->
-          Child = utils.asParent(Parent)(Child)
-          expect(Child.foo).toBe('bar')
+      it 'should create a mixin that tries to decorate from prototype', ->
+        utils.asMixer(Mixer, mixerProps)(a)
+        expect(a.method).toBeDefined()

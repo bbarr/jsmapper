@@ -7,10 +7,22 @@ define (require) ->
     Animal = null
     a = null
     beforeEach ->
-      Animal = asDocument () ->
-        @key 'name'
-        @validate 'name', ((name) -> name.length > 2 && name.length < 10), 'must be between 2 and 10 characters'
-      a = new Animal
+
+      class Animal
+
+        constructor: ->
+
+          @key 'name'
+          @key 'description'
+
+          @validate 'name', ((name) -> name.length > 2 && name.length < 10), 'must be between 2 and 10 characters'
+
+        foo: 'bar'
+
+      Animal = asDocument Animal
+      a = Animal.load( limit: 1 )
+
+      a.log()
 
     describe '#meta', ->
       
@@ -49,3 +61,13 @@ define (require) ->
 
       it 'should iterate over properties that are defined as keys', ->
         a.each (v, k) -> expect(a._meta.keys[k]).toBeDefined()
+
+    describe '#watch', ->
+
+      it 'should keep an eye on things...', ->
+        changed = false
+        a.name = 'foo'
+        a.watch('name', (-> changed = true))
+        a.name = 'bar'
+        waitsFor -> changed
+        runs -> expect(changed).toBe(true)
