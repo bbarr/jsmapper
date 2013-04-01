@@ -11,18 +11,13 @@ define (require) ->
       class Animal
 
         constructor: ->
-
           @key 'name'
-          @key 'description'
-
           @validate 'name', ((name) -> name.length > 2 && name.length < 10), 'must be between 2 and 10 characters'
 
         foo: 'bar'
 
       Animal = asDocument Animal
-      a = Animal.load( limit: 1 )
-
-      a.log()
+      a = new Animal
 
     describe '#meta', ->
       
