@@ -3,7 +3,7 @@
   define(function(require) {
     var asDocument;
 
-    asDocument = require('document');
+    asDocument = require('lib/document');
     return describe('document', function() {
       var Animal, a;
 
